@@ -62,11 +62,21 @@ int isConvex(Polygon p) {
     }
 }
 
+int isInside(Polygon p, Point point) {
+    int i, j, count = 0;
+    for (i = 0, j = p.num_points - 1; i < p.num_points; j = i++) {
+        if (((p.points[i].y > point.y) != (p.points[j].y > point.y)) &&
+            (point.x < (p.points[j].x - p.points[i].x) * (point.y - p.points[i].y) / (p.points[j].y - p.points[i].y) + p.points[i].x)) {
+            count++;
+        }
+    }
+    return (count % 2 == 1);
+}
+
 
 int main() {
   Point points1[] = {{2, 6},{2,1},{15,2},{20,1},{20,6}};
   Polygon polygon1 = {points1, 4};
-
   if(is_polygon_simple(polygon1)) {
     printf("simples");
     if(isConvex(polygon1)) {
@@ -77,7 +87,17 @@ int main() {
   }
   else {
     printf("Polygon is not simple");
-  } 
+  }
+   
+  Point tests[] = {{12, 10}, {25, 2}, {5,5}};
+
+  for(int i = 0; i < 3; i++) {
+    if(isInside(polygon1, tests[i]))
+        printf("Está dentro\n");
+    else {
+        printf("Não está dentro\n");
+    }
+  }
   return 0;
 }
 

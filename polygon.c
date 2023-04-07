@@ -75,28 +75,52 @@ int isInside(Polygon p, Point point) {
 
 
 int main() {
-  Point points1[] = {{2, 6},{2,1},{15,2},{20,1},{20,6}};
-  Polygon polygon1 = {points1, 4};
-  if(is_polygon_simple(polygon1)) {
-    printf("simples");
-    if(isConvex(polygon1)) {
-        printf(" e convexo");
-    } else {
-        printf(" e nao convexo");
-    }
-  }
-  else {
-    printf("Polygon is not simple");
-  }
-   
-  Point tests[] = {{12, 10}, {25, 2}, {5,5}};
+  int n_polygons= 0;
+  int n_points= 0;
+  int n_vertices=0;
+  scanf("%d %d", &n_polygons, &n_points);
+  printf("%d %d\n", n_polygons, n_points);
 
-  for(int i = 0; i < 3; i++) {
-    if(isInside(polygon1, tests[i]))
-        printf("Está dentro\n");
-    else {
-        printf("Não está dentro\n");
+  //Verifica se o polígono é simples e convexo
+  Polygon *polygons = malloc(n_polygons * sizeof(Polygon));
+
+  for(int i = 0; i < n_polygons; i++){
+    scanf("%d", &n_vertices);
+    printf("%d\n", n_vertices);
+    Point *points = malloc(n_vertices * sizeof(Point));
+    for(int j = 0; j < n_vertices; j++){
+      scanf("%le %le", &points[j].x, &points[j].y);
+      printf("%le %le\n", points[j].x, points[j].y);
     }
+    polygons[i].points = points;
+    polygons[i].num_points = n_vertices;
+  }
+  for(int i = 0; i < n_polygons; i++){
+    printf("%d", i+1);
+    if(is_polygon_simple(polygons[i])) {
+      printf(" simples");
+      if(isConvex(polygons[i])) {
+          printf(" e convexo\n");
+      } else {
+          printf(" e nao convexo\n");
+      }
+    }
+    else {
+      printf("nao simples\n");
+    }
+  }
+
+  //Verifica se um ponto está dentro do polígono
+  Point *points_avulsos = malloc(n_points * sizeof(Point));
+  for(int i = 0; i < n_points; i++){
+    scanf("%le %le", &points_avulsos[i].x, &points_avulsos[i].y);
+    printf("%d:", i+1);
+    for(int j = 0; j < n_polygons; j++){
+      if(isInside(polygons[j], points_avulsos[i])) {
+        printf("%d ", j+1);
+      }
+    }
+    printf("\n");
   }
   return 0;
 }

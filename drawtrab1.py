@@ -26,8 +26,8 @@ def le_poligono(p = 0):
         a=(sys.stdin.readline().split())
         x = int(a[0])
         y = int(a[1])
-	ax.append(x)
-	ay.append(y)
+        ax.append(x)
+        ay.append(y)
         if x > maxx:
             maxx = x
         if x < minx:
@@ -36,10 +36,10 @@ def le_poligono(p = 0):
             maxy = y
         if y < miny:
             miny = y
-    ax.append(ax[0])
-    ay.append(ay[0])
-    abscissas.append(ax)
-    ordenadas.append(ay)
+        ax.append(ax[0])
+        ay.append(ay[0])
+        abscissas.append(ax)
+        ordenadas.append(ay)
 
 def le_entrada():
     global n_poly

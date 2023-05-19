@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 struct point {
+    int index;
     double x;
     double y;
 };
@@ -81,8 +82,10 @@ int main() {
     int n_points= 0;
     scanf("%d", &n_points);
     struct point *points = malloc(n_points * sizeof(struct point));
-    for(int i = 0; i < n_points; i++)
-        scanf("%le %le", &points[i].x, &points[i].y);
+    for(int i = 0; i < n_points; i++){
+        scanf("%le %le",&points[i].x, &points[i].y);
+        points[i].index = i;
+    }
 
     struct triangle *triangles;
     int num_triangles;
@@ -92,7 +95,7 @@ int main() {
     printf("%d triangles:\n", num_triangles);
     int i;
     for (i = 0; i < num_triangles; i++) {
-        printf("Triangle %d: (%f, %f), (%f, %f), (%f, %f)\n", i+1, triangles[i].a.x, triangles[i].a.y, triangles[i].b.x, triangles[i].b.y, triangles[i].c.x, triangles[i].c.y);
+        printf("Triangle %d: (%d, %f, %f), (%d, %f, %f), (%d, %f, %f)\n", i+1,triangles[i].a.index, triangles[i].a.x, triangles[i].a.y,triangles[i].b.index, triangles[i].b.x, triangles[i].b.y,triangles[i].c.index, triangles[i].c.x, triangles[i].c.y);
     }
     free(triangles);
     return 0;

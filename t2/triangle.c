@@ -78,11 +78,17 @@ void triangulate(struct point *points, int num_points, struct triangle **triangl
 }
 
 int main() {
-    struct point points[] = {{1, 4}, {1, 20}, {15, 20}, {15, 4}};
-    int num_points = sizeof(points) / sizeof(struct point);
+    int n_points= 0;
+    scanf("%d", &n_points);
+    struct point *points = malloc(n_points * sizeof(struct point));
+    for(int i = 0; i < n_points; i++)
+        scanf("%le %le", &points[i].x, &points[i].y);
+
     struct triangle *triangles;
     int num_triangles;
-    triangulate(points, num_points, &triangles, &num_triangles);
+    for(int i = 0; i < n_points; i++)
+        printf("%d: (%f, %f)\n", i+1, points[i].x, points[i].y);
+    triangulate(points, n_points, &triangles, &num_triangles);
     printf("%d triangles:\n", num_triangles);
     int i;
     for (i = 0; i < num_triangles; i++) {

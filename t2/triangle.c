@@ -84,7 +84,7 @@ int main() {
     struct point *points = malloc(n_points * sizeof(struct point));
     for(int i = 0; i < n_points; i++){
         scanf("%le %le",&points[i].x, &points[i].y);
-        points[i].index = i;
+        points[i].index = i+1;
     }
 
     struct triangle *triangles;

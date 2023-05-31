@@ -80,20 +80,35 @@ void triangulate(struct point *points, int num_points, struct triangle **triangl
     free(indices);
 }
 
+int is_vertex(struct point p, struct triangle t){
+    if(p.index == t.a.index || p.index == t.b.index || p.index == t.c.index){
+        return 1;
+    }
+    return 0;
+}
+
 void find_opposite(int num_triangles, struct triangle **triangles){
     for(int i = 0; i < num_triangles; i++){
         struct triangle t = (*triangles)[i];
         int flag = 0;
         for(int j = 0; j < num_triangles; j++){
             if(t.a.index != (*triangles)[j].a.index && t.a.index != (*triangles)[j].b.index && t.a.index != (*triangles)[j].c.index){
-                (*triangles)[i].a.opposite = (*triangles)[j].index;
-                flag = 1;}
+                if(is_vertex(t.b, (*triangles)[j]) && is_vertex(t.c, (*triangles)[j])){
+                    (*triangles)[i].a.opposite = (*triangles)[j].index;
+                    flag = 1;
+                }
+            }
             if(t.b.index != (*triangles)[j].a.index && t.b.index != (*triangles)[j].b.index && t.b.index != (*triangles)[j].c.index){
-                (*triangles)[i].b.opposite = (*triangles)[j].index;
-                flag = 1;}
+                if(is_vertex(t.a, (*triangles)[j]) && is_vertex(t.c, (*triangles)[j])){
+                    (*triangles)[i].b.opposite = (*triangles)[j].index;
+                    flag = 1;
+                    }
+            }
             if(t.c.index != (*triangles)[j].a.index && t.c.index != (*triangles)[j].b.index && t.c.index != (*triangles)[j].c.index){
-                (*triangles)[i].c.opposite = (*triangles)[j].index;    
-                flag = 1;
+                if(is_vertex(t.a, (*triangles)[j]) && is_vertex(t.b, (*triangles)[j])){
+                    (*triangles)[i].c.opposite = (*triangles)[j].index;    
+                    flag = 1;
+                    }
             }
             if(flag){
                 break;

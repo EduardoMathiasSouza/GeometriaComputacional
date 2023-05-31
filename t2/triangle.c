@@ -102,6 +102,31 @@ void find_opposite(int num_triangles, struct triangle **triangles){
     }
 }
 
+void order_points_triangle(struct triangle *t){
+    struct point a = t->a;
+    struct point b = t->b;
+    struct point c = t->c;
+    struct point temp;
+    if(a.index > b.index){
+        temp = a;
+        a = b;
+        b = temp;
+    }
+    if(a.index > c.index){
+        temp = a;
+        a = c;
+        c = temp;
+    }
+    if(b.index > c.index){
+        temp = b;
+        b = c;
+        c = temp;
+    }
+    t->a = a;
+    t->b = b;
+    t->c = c;
+}
+
 int main() {
     int n_points= 0;
     scanf("%d", &n_points);
@@ -118,6 +143,8 @@ int main() {
         printf("%d: (%f, %f)\n", i+1, points[i].x, points[i].y);
     triangulate(points, n_points, &triangles, &num_triangles);
     printf("%d triangles:\n", num_triangles);
+    for(int i = 0; i < num_triangles; i++)
+        order_points_triangle(&triangles[i]);
     find_opposite(num_triangles, &triangles);
     for (int i = 0; i < num_triangles; i++) {
         printf("Triangle %d: (%d, %f, %f), (%d, %f, %f), (%d, %f, %f) (%d %d %d)\n", i+1,triangles[i].a.index, triangles[i].a.x, triangles[i].a.y,triangles[i].b.index, triangles[i].b.x, triangles[i].b.y,triangles[i].c.index, triangles[i].c.x, triangles[i].c.y, triangles[i].a.opposite, triangles[i].b.opposite, triangles[i].c.opposite);

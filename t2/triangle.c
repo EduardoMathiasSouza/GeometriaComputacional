@@ -4,8 +4,8 @@
 struct point {
     int index;
     int opposite;
-    double x;
-    double y;
+    int x;
+    int y;
 };
 
 struct triangle {
@@ -17,7 +17,7 @@ struct triangle {
 
 int is_ear(struct point a, struct point b, struct point c, struct point *points, int num_points) {
     int i;
-    double cross_product = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+    int cross_product = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
     if (cross_product <= 0) {
         return 0; // not a convex corner
     }
@@ -25,9 +25,9 @@ int is_ear(struct point a, struct point b, struct point c, struct point *points,
         if ((points[i].x == a.x && points[i].y == a.y) || (points[i].x == b.x && points[i].y == b.y) || (points[i].x == c.x && points[i].y == c.y)) {
             continue;
         }
-        double cross_product1 = (b.x - a.x) * (points[i].y - a.y) - (b.y - a.y) * (points[i].x - a.x);
-        double cross_product2 = (c.x - b.x) * (points[i].y - b.y) - (c.y - b.y) * (points[i].x - b.x);
-        double cross_product3 = (a.x - c.x) * (points[i].y - c.y) - (a.y - c.y) * (points[i].x - c.x);
+        int cross_product1 = (b.x - a.x) * (points[i].y - a.y) - (b.y - a.y) * (points[i].x - a.x);
+        int cross_product2 = (c.x - b.x) * (points[i].y - b.y) - (c.y - b.y) * (points[i].x - b.x);
+        int cross_product3 = (a.x - c.x) * (points[i].y - c.y) - (a.y - c.y) * (points[i].x - c.x);
         if (cross_product1 >= 0 && cross_product2 >= 0 && cross_product3 >= 0) {
             return 0; // point inside triangle
         }
@@ -44,7 +44,7 @@ void triangulate(struct point *points, int num_points, struct triangle **triangl
     *triangles = NULL;
     *num_triangles = 0;
     int orientation = 0; // 0 for counterclockwise, 1 for clockwise
-    double cross_product = 0;
+    int cross_product = 0;
     for (i = 0; i < num_points; i++) {
         j = (i + 1) % num_points;
         k = (i + 2) % num_points;
@@ -147,22 +147,23 @@ int main() {
     scanf("%d", &n_points);
     struct point *points = malloc(n_points * sizeof(struct point));
     for(int i = 0; i < n_points; i++){
-        scanf("%le %le",&points[i].x, &points[i].y);
+        scanf("%d %d",&points[i].x, &points[i].y);
         points[i].index = i+1;
         points[i].opposite = 0;
     }
 
     struct triangle *triangles;
     int num_triangles;
+    printf("%d\n", n_points);
     for(int i = 0; i < n_points; i++)
-        printf("%d: (%f, %f)\n", i+1, points[i].x, points[i].y);
+        printf("%d %d\n", points[i].x, points[i].y);
     triangulate(points, n_points, &triangles, &num_triangles);
-    printf("%d triangles:\n", num_triangles);
+    printf("%d\n", num_triangles);
     for(int i = 0; i < num_triangles; i++)
         order_points_triangle(&triangles[i]);
     find_opposite(num_triangles, &triangles);
     for (int i = 0; i < num_triangles; i++) {
-        printf("Triangle %d: (%d, %f, %f), (%d, %f, %f), (%d, %f, %f) (%d %d %d)\n", i+1,triangles[i].a.index, triangles[i].a.x, triangles[i].a.y,triangles[i].b.index, triangles[i].b.x, triangles[i].b.y,triangles[i].c.index, triangles[i].c.x, triangles[i].c.y, triangles[i].a.opposite, triangles[i].b.opposite, triangles[i].c.opposite);
+        printf("%d %d %d %d %d %d\n", triangles[i].a.index, triangles[i].b.index, triangles[i].c.index, triangles[i].a.opposite, triangles[i].b.opposite, triangles[i].c.opposite);
     }
 
     free(triangles);

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 struct Segment {
+    int index;
     int x1, y1;
     int x2, y2;
 };
@@ -113,25 +114,111 @@ void insertSegment(struct Node* root, struct Segment segment, int dimension) {
     }
 }
 
+// Structure to represent a node in the segment tree
+typedef struct {
+    int count;  // Number of intervals in the subtree
+    struct Segment* segment; // Array of intervals in the subtree
+} Node;
+
+// Function to build the segment tree
+Node* buildSegmentTree(struct Segment* segments, int start, int end) {
+    if (start > end)
+        return NULL;
+
+    // Create a new node for the current segment range
+    Node* node = (Node*)malloc(sizeof(Node));
+    if (start == end) {
+        node->count = 1;
+        node->segment = &segments[start];
+    } else {
+        int mid = (start + end) / 2;
+        Node* leftChild = buildSegmentTree(segments, start, mid);
+        Node* rightChild = buildSegmentTree(segments, mid + 1, end);
+        node->count = leftChild->count + rightChild->count;
+        node->segment = (struct Segment*)malloc(node->count * sizeof(struct Segment));
+        int i, j, k;
+        i = j = k = 0;
+        while (i < leftChild->count && j < rightChild->count) {
+            if (leftChild->segment[i].x1 <= rightChild->segment[j].x1) {
+                node->segment[k] = leftChild->segment[i];
+                i++;
+            } else {
+                node->segment[k] = rightChild->segment[j];
+                j++;
+            }
+            k++;
+        }
+        while (i < leftChild->count) {
+            node->segment[k] = leftChild->segment[i];
+            i++;
+            k++;
+        }
+        while (j < rightChild->count) {
+            node->segment[k] = rightChild->segment[j];
+            j++;
+            k++;
+        }
+        free(leftChild->segment);
+        free(rightChild->segment);
+        free(leftChild);
+        free(rightChild);
+    }
+    return node;
+}
+
+// Function to query the segment tree and find intervals containing the query point
+void querySegmentTree(Node* node, int queryX, int queryY) {
+    if (node == NULL)
+        return;
+
+    int i;
+    for (i = 0; i < node->count; i++) {
+        struct Segment segment = node->segment[i];
+        if (segment.x1 <= queryX && queryX <= segment.x2 &&
+            segment.y1 <= queryY && queryY <= segment.y2) {
+            // The query point lies inside this interval
+            printf("Segment (%d,%d) to (%d,%d) contains the query point.\n",
+                   segment.x1, segment.y1, segment.x2, segment.y2);
+        }
+    }
+
+    // Recurse on the left or right child based on the query point's x-coordinate
+    if (queryX < node->segment[0].x1)
+        querySegmentTree(node->left, queryX, queryY);
+    else
+        querySegmentTree(node->right, queryX, queryY);
+}
+
 int main() {
     int n_segments = 0, n_windows = 0;
+
     scanf("%d %d", &n_segments, &n_windows);
-    struct point *points = malloc(n_segments * sizeof(struct point));
+
+    struct Segment *segments = malloc(n_segments * sizeof(struct Segment));
+    struct Segment *windows = malloc(n_windows * sizeof(struct Segment));
+
     for(int i = 0; i < n_segments; i++){
-        scanf("%d %d",&points[i].x, &points[i].y);
-        points[i].index = i+1;
-        points[i].opposite = 0;
+        scanf("%d %d %d %d",&segments[i].x1, &segments[i].x2, &segments[i].y1, &segments[i].y2);
+        segments[i].index = i+1;
+    }
+
+    for(int i = 0; i < n_windows; i++){
+        scanf("%d %d %d %d",&windows[i].x1, &windows[i].x2, &windows[i].y1, &windows[i].y2);
+        windows[i].index = i+1;
     }
 
     // Array of segments
-    struct Segment segments[] = {{0, 1, 0, 10},{10,0,20,0},{1,1,10,10}};
+    //struct Segment segments[] = {{0, 1, 0, 10},{10,0,20,0},{1,1,10,10}};
     // Construct the 2D range tree
-    int n = sizeof(segments) / sizeof(segments[0]);
-    struct Node* root = build2DRangeTree(segments, 0, n - 1, 0);
+    //int n = sizeof(segments) / sizeof(segments[0]);
+    struct Node* root = build2DRangeTree(segments, 0, n_segments - 1, 0);
 
     // Perform a range query on the tree for the rectangle [3, 8]x[2, 7]
-    struct Segment queryRect = {8,8,12,12};
-    queryRangeTree(root, queryRect, 0);
+    //struct Segment queryRect = {8,8,12,12};
+    for (int i = 0; i < n_windows; i++){
+        printf("asdfasdfasdf\n");
+        queryRangeTree(root, windows[i], 0);
+    }
 
     return 0;
 }

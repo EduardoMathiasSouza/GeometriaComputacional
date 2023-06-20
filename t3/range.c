@@ -114,6 +114,15 @@ void insertSegment(struct Node* root, struct Segment segment, int dimension) {
 }
 
 int main() {
+    int n_segments = 0, n_windows = 0;
+    scanf("%d %d", &n_segments, &n_windows);
+    struct point *points = malloc(n_segments * sizeof(struct point));
+    for(int i = 0; i < n_segments; i++){
+        scanf("%d %d",&points[i].x, &points[i].y);
+        points[i].index = i+1;
+        points[i].opposite = 0;
+    }
+
     // Array of segments
     struct Segment segments[] = {{0, 1, 0, 10},{10,0,20,0},{1,1,10,10}};
     // Construct the 2D range tree

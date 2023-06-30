@@ -69,7 +69,7 @@ void queryRangeTree(struct Node* root, struct Segment rect, int dimension) {
     // Check if the segment intersects with the rectangle
     if (root->segment.x1 <= rect.x2 && root->segment.x2 >= rect.x1 &&
         root->segment.y1 <= rect.y2 && root->segment.y2 >= rect.y1) {
-        printf("Segment: (%d, %d) - (%d, %d)\n", root->segment.x1, root->segment.y1, root->segment.x2, root->segment.y2);
+        printf("%d ", root->segment.index);
     }
 
     if (dimension == 0) {
@@ -141,8 +141,8 @@ int main() {
     // Perform a range query on the tree for the rectangle [3, 8]x[2, 7]
     //struct Segment queryRect = {8,8,12,12};
     for (int i = 0; i < n_windows; i++){
-        printf("asdfasdfasdf\n");
         queryRangeTree(root, windows[i], 0);
+        printf("\n");
     }
 
     return 0;

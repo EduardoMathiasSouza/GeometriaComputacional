@@ -21,6 +21,7 @@ int gen(int a, int b) {
 int32_t main(int32_t argc, char *argv[]) {
   cin.tie(0);
   ios_base::sync_with_stdio(0);
+
   if (argc < 2) {
     cout << "usage: " << argv[0] << " <seed>\n";
     exit(1);
@@ -30,18 +31,16 @@ int32_t main(int32_t argc, char *argv[]) {
   int n = gen(1, MAXN);
   cout << n << "\n";
 
-  for (int i=0; i < n; i++){
-        int x = gen(1, MAXX);
-        int y = gen(x, MAXX);
-        cout << x << " " << y << "\n";
+  for (int i = 0; i < n; i++) {
+    int x = gen(1, MAXX);
+    int y = gen(x, MAXX);
+    cout << x << " " << y << "\n";
   }
   int q = gen(1, MAXQ);
   cout << q << "\n";
 
-  while (q--){
+  while (q--) {
     int qx = gen(-5, MAXX + 5);
     cout << qx << "\n";
   }
-  
-  
 }

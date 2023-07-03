@@ -13,3 +13,8 @@ segtree: segtree.cpp
 segtree-brute: segtree-brute.cpp
 
 gen-segtree: gen-segtree.cpp
+
+clean:
+
+purge: clean
+	-rm -f segtree-brute segtree gen-segtree

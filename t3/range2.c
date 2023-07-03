@@ -1,10 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+struct Segment
+{
+    int index;
+    int reported;
+};
+
 struct Point
 {
     double x;
     double y;
+    struct Segment *s;
 };
 
 struct YNode
@@ -40,13 +47,21 @@ struct YNode *findSplitYNode(struct YNode *t, double y0, double y1)
     return t;
 }
 
+void reportPoint(struct Point p)
+{
+    if (!p.s->reported)
+    {
+        printf("%d ", p.s->index + 1);
+        p.s->reported = 1;
+    } 
+}
+
 void printYTree(struct YNode *t, int indent)
 {
     if (!t)
         return;
 
-    for (int i = 0; i < indent; i++) printf("  ");
-    printf("%lf %lf\n", t->p.x, t->p.y);
+    reportPoint(t->p);
     printYTree(t->left, indent + 1);
     printYTree(t->right, indent + 1);
 }
@@ -55,14 +70,14 @@ void queryYTree(struct YNode *t, double y0, double y1)
 {
     struct YNode *split = findSplitYNode(t, y0, y1);
     if (split->p.y >= y0 && split->p.y <= y1)
-        printf("%lf %lf\n", split->p.x, split->p.y);
+        reportPoint(split->p);
 
     // report the subtrees that are to the left of the split vertex
     struct YNode *v = split->left;
     while (v && (v->left || v->right))
     {
         if (v->p.y >= y0 && v->p.y <= y1)
-            printf("%lf %lf\n", v->p.x, v->p.y);
+            reportPoint(v->p);
 
         if (y0 <= v->p.y)
         {
@@ -74,14 +89,14 @@ void queryYTree(struct YNode *t, double y0, double y1)
     }
 
     if (v && v->p.y >= y0 && v->p.y <= y1)
-        printf("%lf %lf\n", v->p.x, v->p.y);
+        reportPoint(v->p);
 
     // report the subtrees that are to the right of the split vertex
     v = split->right;
     while (v && (v->left || v->right))
     {
         if (v->p.y >= y0 && v->p.y <= y1)
-            printf("%lf %lf\n", v->p.x, v->p.y);
+            reportPoint(v->p);
 
         if (v->p.y < y1)
         {
@@ -93,7 +108,7 @@ void queryYTree(struct YNode *t, double y0, double y1)
     }
 
     if (v && v->p.y >= y0 && v->p.y <= y1)
-        printf("%lf %lf\n", v->p.x, v->p.y);
+        reportPoint(v->p);
 }
 
 // p sorted by y
@@ -128,7 +143,7 @@ void query2DRangeTree(struct Node *t, double x0, double x1, double y0, double y1
 {
     struct Node *split = findSplit2DNode(t, x0, x1);
     if (split->x >= x0 && split->x <= x1)
-        queryYTree(split->tAssoc, y0, y1);
+        reportPoint(split->tAssoc->p);
 
     // report the subtrees that are to the left of the split vertex
     struct Node *v = split->left;
@@ -197,7 +212,7 @@ struct Node *build2DRangeTree(struct Point* p, int n)
 
     for (int i = 0; i < n; i++)
     {
-        if (p[i].x < p[mid].x)
+        if (p[i].x <= p[mid].x)
             left[leftSize++] = p[i];
         else if (p[i].x > p[mid].x)
             right[rightSize++] = p[i];
@@ -215,17 +230,96 @@ struct Node *build2DRangeTree(struct Point* p, int n)
     return root;
 }
 
+void merge(struct Point points[], int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    struct Point L[n1], R[n2];
+
+    for (int i = 0; i < n1; i++)
+        L[i] = points[left + i];
+    for (int j = 0; j < n2; j++)
+        R[j] = points[mid + 1 + j];
+
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2) {
+        if (L[i].y <= R[j].y)
+            points[k++] = L[i++];
+        else
+            points[k++] = R[j++];
+    }
+
+    while (i < n1)
+        points[k++] = L[i++];
+
+    while (j < n2)
+        points[k++] = R[j++];
+}
+
+void mergeSort(struct Point points[], int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+
+        // Sort first and second halves
+        mergeSort(points, left, mid);
+        mergeSort(points, mid + 1, right);
+
+        // Merge the sorted halves
+        merge(points, left, mid, right);
+    }
+}
+
+void print2DRangeTree(struct Node *t, int level)
+{
+    if (t == NULL)
+        return;
+
+    print2DRangeTree(t->left, level + 1);
+
+    for (int i = 0; i < level; i++)
+        printf("   ");
+
+    printf("%lf %lf\n", t->tAssoc->p.x, t->tAssoc->p.y);
+
+    print2DRangeTree(t->right, level + 1);
+}
+
 int main(int argc, char** argv)
 {
-    struct Point p[] = {
-        { 2, 1 },
-        { 5, 2 },
-        { 9, 4 },
-        { 4, 5 },
-        { 8, 8 },
-        { 7, 10 }
-    };
+    int n_segments = 0, n_windows = 0;
 
-    struct Node *rangeTree = build2DRangeTree(p, 6);
-    query2DRangeTree(rangeTree, 3.5, 8.5, 3.5, 8.5);
+    scanf("%d %d", &n_segments, &n_windows);
+    
+    struct Segment *segments = calloc(n_segments, sizeof(struct Segment));
+    
+    struct Point *points = calloc(2 * n_segments, sizeof(struct Point));
+    
+    for (int i = 0; i < n_segments; i++)
+    {
+        double x1, x2, y1, y2;
+        scanf("%lf %lf %lf %lf",&points[2 * i].x, &points[2 * i + 1].x, &points[2 * i].y, &points[2 * i + 1].y);
+        
+        points[2 * i].s = &segments[i];
+        points[2 * i + 1].s = &segments[i];
+
+        segments[i].reported = 0;
+        segments[i].index = i;
+    }
+    
+    mergeSort(points, 0, 2 * n_segments - 1);
+    
+    struct Node *rangeTree = build2DRangeTree(points, 2 * n_segments);
+    
+    print2DRangeTree(rangeTree, 0);
+    return 0;
+
+    for (int i = 0; i < n_windows; i++)
+    {
+        double x0, x1, y0, y1;
+        scanf("%lf %lf %lf %lf", &x0, &x1, &y0, &y1);
+
+        query2DRangeTree(rangeTree, x0, x1, y0, y1);
+        printf("\n");
+    }
+
 }

@@ -23,35 +23,48 @@ struct Node* createNode(struct Segment segment) {
     return newNode;
 }
 
+void merge(struct Segment segments[], int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    struct Segment L[n1], R[n2];
+
+    for (int i = 0; i < n1; i++)
+        L[i] = segments[left + i];
+    for (int j = 0; j < n2; j++)
+        R[j] = segments[mid + 1 + j];
+
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2) {
+        if (L[i].x1 <= R[j].x1)
+            segments[k++] = L[i++];
+        else
+            segments[k++] = R[j++];
+    }
+
+    while (i < n1)
+        segments[k++] = L[i++];
+
+    while (j < n2)
+        segments[k++] = R[j++];
+}
+
+void mergeSort(struct Segment segments[], int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+
+        // Sort first and second halves
+        mergeSort(segments, left, mid);
+        mergeSort(segments, mid + 1, right);
+
+        // Merge the sorted halves
+        merge(segments, left, mid, right);
+    }
+}
+
 struct Node* build2DRangeTree(struct Segment segments[], int start, int end, int dimension) {
     if (start > end)
         return NULL;
-
-    if (dimension == 0) {
-        // Sort segments by x-coordinate of start and end points
-        int i, j;
-        for (i = start + 1; i <= end; i++) {
-            struct Segment temp = segments[i];
-            j = i - 1;
-            while (j >= start && (segments[j].x1 > temp.x1 || (segments[j].x1 == temp.x1 && segments[j].x2 > temp.x2))) {
-                segments[j + 1] = segments[j];
-                j--;
-            }
-            segments[j + 1] = temp;
-        }
-    } else {
-        // Sort segments by y-coordinate of start and end points
-        int i, j;
-        for (i = start + 1; i <= end; i++) {
-            struct Segment temp = segments[i];
-            j = i - 1;
-            while (j >= start && (segments[j].y1 > temp.y1 || (segments[j].y1 == temp.y1 && segments[j].y2 > temp.y2))) {
-                segments[j + 1] = segments[j];
-                j--;
-            }
-            segments[j + 1] = temp;
-        }
-    }
 
     int mid = (start + end) / 2;
     struct Node* root = createNode(segments[mid]);
@@ -61,6 +74,7 @@ struct Node* build2DRangeTree(struct Segment segments[], int start, int end, int
 
     return root;
 }
+
 
 void queryRangeTree(struct Node* root, struct Segment rect, int dimension) {
     if (root == NULL)
@@ -111,15 +125,9 @@ int main() {
         scanf("%d %d %d %d",&windows[i].x1, &windows[i].x2, &windows[i].y1, &windows[i].y2);
         windows[i].index = i+1;
     }
-
-    // Array of segments
-    //struct Segment segments[] = {{0, 1, 0, 10},{10,0,20,0},{1,1,10,10}};
-    // Construct the 2D range tree
-    //int n = sizeof(segments) / sizeof(segments[0]);
+    mergeSort(segments, 0, n_segments - 1);
     struct Node* root = build2DRangeTree(segments, 0, n_segments - 1, 0);
 
-    // Perform a range query on the tree for the rectangle [3, 8]x[2, 7]
-    //struct Segment queryRect = {8,8,12,12};
     for (int i = 0; i < n_windows; i++){
         queryRangeTree(root, windows[i], 0);
         printf("\n");

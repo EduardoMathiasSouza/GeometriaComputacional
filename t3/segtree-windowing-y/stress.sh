@@ -1,5 +1,5 @@
 #!/bin/bash
-gen=gen
+gen=gen-segtree
 sol=segtree
 brute=segtree-brute
 for ((i=1; ; i++)) do

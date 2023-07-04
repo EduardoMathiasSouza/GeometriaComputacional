@@ -97,15 +97,14 @@ struct node {
     return true;
   }
 
-  void dump() {
-    limites.echo();
-    cout << "\n";
-
-    bool first = true;
+  void dump(){
+   limites.echo();
+   cout << "\n";
+   
+   bool first = true;
     for (auto &[x, y] : segmentos) {
       if (!first) cout << " ";
-      cout << "(" << x.first << "," << x.second << ") -- (" << y.first << ","
-           << y.second << ")";
+      cout << "(" << x.first << "," << x.second << ") -- (" << y.first << "," << y.second << ")";
       first = false;
     }
     cout << "\n";
@@ -116,89 +115,69 @@ struct node {
 vector<node> seg(MAX);  // TODO
 int tamseg = 1;
 
+
 vector<pair<ii, ii>> query(int qx, int y1, int y2, int pos, int lx, int rx) {
- // cout << "(query) pos: " << pos << "\n";
- // seg[pos].dump();
-
+ //  cout << "(query) pos: " << pos << "\n";
+//   seg[pos].dump();
   //  report all the interval in I(pos)
-
+  
+  
   vector<pair<ii, ii>> retval;
 
+
   // TODO: mudar para busca binaria
-  auto good = [](int i, int qx, int y1, int y2, int pos) {
+  auto good = [](int i, int qx, int y1, int pos){
     if (seg[pos].segmentos.empty()) return false;
-    //  assert( 0 <= i && i < seg[pos].segmentos.size());
-
-    /*   cout << "good: (";
-       cout << seg[pos].segmentos[i].first.first << ",";
-       cout << seg[pos].segmentos[i].first.second << ") (";
-       cout << seg[pos].segmentos[i].second.first << ",";
-       cout << seg[pos].segmentos[i].second.second << ")\n";
-       cout << "qx:" << qx << " y1: " << y1 << "\n";
-   */ 
-    /*if (ii(qx, y1) == seg[pos].segmentos[i].first ||
-        ii(qx, y1) == seg[pos].segmentos[i].second) return true;
-    */
-
-
-    if (seg_t(seg[pos].segmentos[i].first, seg[pos].segmentos[i].second).on_segment(ii(qx, y1))) return true;
-    if (seg_t(seg[pos].segmentos[i].first, seg[pos].segmentos[i].second).on_segment(ii(qx, y2))) return true;
-
-    if (seg_t(ii(qx, y1), ii(qx, y2)).on_segment(seg[pos].segmentos[i].first)) return true;
-    if (seg_t(ii(qx, y1), ii(qx, y2)).on_segment(seg[pos].segmentos[i].second)) return true;
+    assert( 0 <= i && i < seg[pos].segmentos.size());
     
-    return cw(seg[pos].segmentos[i].first, seg[pos].segmentos[i].second,
-              ii(qx, y1));
-    /*point a(seg[pos].segmentos[i].first),
-          b(seg[pos].segmentos[i].second),
+ /*   cout << "good: (";
+    cout << seg[pos].segmentos[i].first.first << ",";
+    cout << seg[pos].segmentos[i].first.second << ") (";
+    cout << seg[pos].segmentos[i].second.first << ",";
+    cout << seg[pos].segmentos[i].second.second << ")\n";
+    cout << "qx:" << qx << " y1: " << y1 << "\n";
+*/
+    return cw(seg[pos].segmentos[i].first, 
+               seg[pos].segmentos[i].second,
+               ii(qx, y1));
+    point a(seg[pos].segmentos[i].first), 
+          b(seg[pos].segmentos[i].second), 
           c(qx, y1);
-    return ccw(a, b, c);*/
+    return ccw(a, b, c);
   };
 
   int start = 0;
 
-  if (!seg[pos].segmentos.empty() && (!good(start, qx, min(y1, y2), max(y1, y2), pos))) {
-    int a = 0;                              // bad
-    int b = seg[pos].segmentos.size() - 1;  // good
+  if (!seg[pos].segmentos.empty() && (!good(start, qx, y1, pos))){
+    int a = 0; // bad
+    int b = seg[pos].segmentos.size() - 1; // good
 
-    while (b - a > 1) {
-      int mid = a + (b - a) / 2;
-      if (good(mid, qx, min(y1, y2), max(y1, y2), pos)) {
-        b = mid;
-      } else {
-        a = mid;
-      }
+    while (b - a > 1){
+        int mid = a + (b - a)/2;
+        if (good(mid, qx, y1, pos)){
+            b = mid;
+        }else{
+            a = mid;
+        }
     }
     start = b;
   }
-
- /* if (!seg[pos].segmentos.empty()) {
-    cout << "good: " << good(0, qx, min(y1, y2), max(y1, y2), pos) << " qx: " << qx
-         << "y' : " << min(y1, y2) << "\n ";
+  if (!seg[pos].segmentos.empty()){
+    //cout << "good: "  << good(0, qx, y1, pos) << " qx: " << qx << " y1: " << y1 << "\n";
   }
 
-  cout << "start:" << start << "\n";
- */
-  for (int i = start; i < seg[pos].segmentos.size(); i++) {
-    auto [l, r] = seg[pos].segmentos[i];
-    //      cout << "(" << l.first << "," << l.second << ") -- (" << r.first <<
-    //      "," << r.second << ")";
-    //  seg_t a(point(l.first, l.second), point(r.first, r.second)),
-    //      b(point(qx, min(y1, y2)), point(qx, max(y1, y2)));
-
-    seg_t a(l, r);
-    seg_t b(ii(qx, min(y1, y2)), ii(qx, max(y1, y2)));
-
-    int d = dss(a, b);
-
-
-    // if (intersect(a, b)) {  // intersect
-    if (d == 0 || b.on_segment(l) || b.on_segment(r) || a.on_segment(ii(qx, min(y1, y2))) || a.on_segment(ii(qx, max(y1, y2))) ) {  // intersect
-      retval.emplace_back(l, r);
-      //       cout << " <--\n";
-    } else {
-      break;
-      //       cout << " :(\n";
+  //cout << "start:"  << start << "\n";
+  for (int i=start; i < seg[pos].segmentos.size(); i++) {
+      auto [l, r] = seg[pos].segmentos[i];
+//      cout << "(" << l.first << "," << l.second << ") -- (" << r.first << "," << r.second << ")";
+    seg_t a(point(l.first, l.second), point(r.first, r.second)), 
+        b(point(qx, y1), point(qx, y2));
+    if (intersect(a, b)){ // intersect
+        retval.emplace_back(l, r);
+ //       cout << " <--\n";
+    }else{
+        break;
+ //       cout << " :(\n";
     }
   }
 
@@ -275,7 +254,7 @@ void dump(int pos, int lx, int rx, int h = 0) {
   cout << ", seg: ";
   if (seg[pos].segmentos.empty()) cout << "(vazio)";
   for (auto &[x, y] : seg[pos].segmentos) {
-    //  cout << "[" << x << "," << y << "] ";
+  //  cout << "[" << x << "," << y << "] ";
   }
   cout << "\n";
 
@@ -285,85 +264,6 @@ void dump(int pos, int lx, int rx, int h = 0) {
   int mid = lx + (rx - lx) / 2;
   dump(2 * pos + 1, lx, mid, h + 2);
   dump(2 * pos + 2, mid, rx, h + 2);
-}
-
-bool vertical(pair<ii, ii> a) { return a.first.first == a.second.first; }
-
-void sortseg(int pos, int lx, int rx) {
-  //   cout << "sortseg: " << pos << "\n";
-  /*  auto cmp = [](pair<ii, ii> a, pair<ii, ii> b){
-         ii x, y, z, w;
-         x = a.first;
-         y = a.second;
-         z = b.first;
-         w = b.second;
-
-         return ccw(x, y, z) && ccw(x, y, w);
-     };*/
-
-  auto cmp = [](pair<ii, ii> a, pair<ii, ii> b) {
-    auto [a1, b1] = a.first;
-    auto [c1, d1] = a.second;
-
-    auto [w, x] = b.first;
-    auto [y, z] = b.second;
-
-    ii max_y2, min_y2;
-    if (b.first.second > b.second.second) {
-      max_y2 = b.first;
-      min_y2 = b.second;
-    } else {
-      max_y2 = b.second;
-      min_y2 = b.first;
-    }
-    ii max_y1, min_y1;
-    if (a.first.second > a.second.second) {
-      max_y1 = a.first;
-      min_y1 = a.second;
-    } else {
-      max_y1 = a.second;
-      min_y1 = a.first;
-    }
-    // vertical
-    if (vertical(a) && vertical(b)) {
-      return max_y1.second < max_y2.second;
-    } else if (vertical(a)) {
-    return !ccw(b.first, b.second, max_y1);
-
-        // return max_y1.second < max_y2.second;
-    } else if (vertical(b)) {
- return ccw(a.first, a.second, max_y2);
-    //   return !(max_y2.second < max_y1.second);
-    }
-
-    if (a1 < w) {
-      vet u(point(a1, b1), point(c1, d1)), v(point(a1, b1), point(w, x));
-      return cross(u, v) > 0;
-    } else {
-      vet u(point(w, x), point(y, z)), v(point(w, x), point(a1, b1));
-      return cross(u, v) < 0;
-    }
-  };
-
-  // cout << "sz: " << seg[pos].segmentos.size() << "\n";
-
-  sort(all(seg[pos].segmentos), cmp);
-  /*  cout << "aqui: ";
- for (auto &[x, y] : seg[pos].segmentos){
-          cout << "(" << x.first << "," << x.second << ") -- ";
-           cout << "(" << y.first << "," << y.second << ")\n";
-       }
-
-
-    seg[pos].dump();
-    cout << "\n";
- */
-  if (rx - lx == 1) {
-    return;
-  }
-  int mid = lx + (rx - lx) / 2;
-  sortseg(2 * pos + 1, lx, mid);
-  sortseg(2 * pos + 2, mid, rx);
 }
 
 void build(vector<pair<ii, ii>> &vet) {
@@ -409,20 +309,20 @@ void build(vector<pair<ii, ii>> &vet) {
 
   buildseg(elementares, 0, 0, tamseg);
 
-  /* sort(all(vet),[](pair<ii, ii> a, pair<ii, ii> b){
-         ii x, y, z;
-         x = a.first;
-         y = a.second;
-         z = b.first;
-         if (z == x || z == y) z = b.second;
-         return ccw(x, y, z);
-     });
- */
+  sort(all(vet),[](pair<ii, ii> a, pair<ii, ii> b){
+        ii x, y, z;
+        x = a.first;
+        y = a.second;
+        z = b.first;
+        if (z == x || z == y) z = b.second;
+        return ccw(x, y, z);
+    }
+          );
   // inserir os segmentos o mais alto possível
   for (auto &[x, y] : vet) {
     insert(x, y, 0, 0, tamseg);
   }
-  sortseg(0, 0, tamseg);
+  // dump(0, 0, tamseg);
 }
 
 int32_t main() {
@@ -437,9 +337,6 @@ int32_t main() {
   for (auto &[a, b] : vet) {
     cin >> a.first >> a.second;
     cin >> b.first >> b.second;
-    if (a.first > b.first) {
-      swap(a, b);
-    }
   }
   build(vet);
 
@@ -449,9 +346,6 @@ int32_t main() {
   while (q--) {
     int qx, y1, y2;
     cin >> qx >> y1 >> y2;
-
-    // cout << "--------------------\n";
-    //  cout << "qx: " << qx << " y1: " << y1 << " y2: " << y2 << "\n";
     vector<pair<ii, ii>> answer = query(qx, y1, y2, 0, 0, tamseg);
 
     sort(all(answer));
@@ -459,11 +353,9 @@ int32_t main() {
     bool first = true;
     for (auto &[x, y] : answer) {
       if (!first) cout << " ";
-      cout << "(" << x.first << "," << x.second << ") -- (" << y.first << ","
-           << y.second << ")";
+      cout << "(" << x.first << "," << x.second << ") -- (" << y.first << "," << y.second << ")";
       first = false;
     }
     cout << "\n";
-    //  cout << "--------------------\n\n";
   }
 }

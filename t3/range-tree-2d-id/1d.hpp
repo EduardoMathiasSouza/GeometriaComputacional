@@ -19,12 +19,13 @@ struct node{
     bool ehfolha = false;
 };
 
-struct rangeTree1d{
+struct RangeTree1d{
     vector<node> tree;
 
-    int _create();
+    RangeTree1d() = default;
+    RangeTree1d(vector<iii> pontos);
 
-    void initseg();
+    int _create();
 
     int build(vector<iii> &pontos, int pos, int lx, int rx);
 
@@ -36,7 +37,7 @@ struct rangeTree1d{
 
     void reportSubtree(int pos, vector<int> &answer);
 
-    vector<int> query(int root, int l, int r);
+    vector<int> query(int l, int r);
 };
 
 #endif 

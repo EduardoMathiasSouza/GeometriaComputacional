@@ -1,16 +1,27 @@
 #include "1d.hpp"
+#define all(x) x.begin(), x.end()
 
+RangeTree1d::RangeTree1d(vector<iii> pontos){
+    _create(); // Criação da raiz
 
-int rangeTree1d::_create(){
+    int tam = 1;
+    while (tam < pontos.size()) tam *= 2;
+
+    vector<iii> pontos_tmp(all(pontos));  // TODO
+    sort(all(pontos_tmp),
+         [](iii a, iii b) {
+             return get<1>(a) < get<1>(b);  // ordena por y
+         }
+    );
+    build(pontos_tmp, 0, 0, tam);
+}
+
+int RangeTree1d::_create(){
     tree.emplace_back();
     return tree.size() - 1;
 }
 
-void rangeTree1d::initseg(){
-    _create();
-}
-
-int rangeTree1d::build(vector<iii> &pontos, int pos, int lx, int rx){
+int RangeTree1d::build(vector<iii> &pontos, int pos, int lx, int rx){
     if (rx - lx == 1){
         if (lx < pontos.size()){
             tree[pos].val = pontos[lx];
@@ -33,7 +44,7 @@ int rangeTree1d::build(vector<iii> &pontos, int pos, int lx, int rx){
     return y;
 }
 
-void rangeTree1d::dump(int pos, int lx, int rx, int h){
+void RangeTree1d::dump(int pos, int lx, int rx, int h){
     for (int i=0; i < h; i++){
         cout << " ";
     }
@@ -47,11 +58,11 @@ void rangeTree1d::dump(int pos, int lx, int rx, int h){
     dump(tree[pos].d, mid, rx, h + 1);
 }
 
-bool rangeTree1d::ehfolha(int v){
+bool RangeTree1d::ehfolha(int v){
     return tree[v].ehfolha;
 }
 
-int rangeTree1d::findSplit(int root, int l, int r){
+int RangeTree1d::findSplit(int root, int l, int r){
     int v = root;
     // TODO: substitui o 'menor ou igual' para só 'menor'
     while ( !ehfolha(v) && (r < get<1>(tree[v].val) || l > get<1>(tree[v].val)) ){
@@ -64,7 +75,7 @@ int rangeTree1d::findSplit(int root, int l, int r){
     return v;
 }
 
-void rangeTree1d::reportSubtree(int pos, vector<int> &answer){
+void RangeTree1d::reportSubtree(int pos, vector<int> &answer){
     if (ehfolha(pos)){
         answer.emplace_back(get<2>(tree[pos].val));
         return;
@@ -73,7 +84,8 @@ void rangeTree1d::reportSubtree(int pos, vector<int> &answer){
     reportSubtree(tree[pos].d, answer);
 }
 
-vector<int> rangeTree1d::query(int root, int l, int r){
+vector<int> RangeTree1d::query(int l, int r){
+    int root = 0;
     vector<int> answer;
     int pos = findSplit(root, l, r);
     if (ehfolha(pos)){

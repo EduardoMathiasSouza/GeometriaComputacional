@@ -6,9 +6,11 @@ CXXFLAGS = -Wall -Wextra -O2 --static -std=c++17
 # debug
 CXXFLAGS = -fsanitize=address,undefined -fno-omit-frame-pointer -g -Wall -Wshadow -std=c++17 -Wno-unused-result -Wno-sign-compare -Wno-char-subscripts #-fuse-ld=gold
 
-all: 2d 2d-brute gen-2d
+all: main 2d-brute gen-2d
 
-2d: 2d.cpp 1d.o
+main: main.cpp 2d.o 1d.o
+
+2d.o: 2d.cpp 2d.hpp 1d.o
 
 1d.o: 1d.cpp 1d.hpp
 

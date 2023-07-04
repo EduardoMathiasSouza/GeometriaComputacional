@@ -7,7 +7,7 @@ using namespace std;
 
 typedef tuple<int, int, int> iii;
 
-struct item {  // TODO: mudar nome
+struct item2d {  // TODO: mudar nome
   RangeTree1d assoc;
   int xmid = oo;
   bool ehfolha = false;
@@ -15,7 +15,7 @@ struct item {  // TODO: mudar nome
 };
 
 struct RangeTree2d {
-  vector<item> tree2d;
+  vector<item2d> tree2d;
 
   RangeTree2d(vector<iii> pontos);
 

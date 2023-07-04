@@ -121,17 +121,17 @@ bool Segtree::good(int i, int qx, int y1, int y2, int pos) {
   };
 
 
-vector<pair<ii, ii>> Segtree::query(int qx, int y1, int y2) {
+vector<int> Segtree::query(int qx, int y1, int y2) {
     return query(qx, y1, y2, 0, 0, tamseg);
 }
-vector<pair<ii, ii>> Segtree::query(int qx, int y1, int y2, int pos, int lx,
+vector<int> Segtree::query(int qx, int y1, int y2, int pos, int lx,
                                     int rx) {
   // cout << "(query) pos: " << pos << "\n";
   // seg[pos].dump();
 
   //  report all the interval in I(pos)
 
-  vector<pair<ii, ii>> retval;
+  vector<int> retval;
 
   // TODO: mudar para busca binaria
   int start = 0;
@@ -161,7 +161,7 @@ vector<pair<ii, ii>> Segtree::query(int qx, int y1, int y2, int pos, int lx,
    cout << "start:" << start << "\n";
   */
   for (int i = start; i < seg[pos].segmentos.size(); i++) {
-    auto [l, r, ignore] = seg[pos].segmentos[i];
+    auto [l, r, id] = seg[pos].segmentos[i];
     //      cout << "(" << l.first << "," << l.second << ") -- (" << r.first <<
     //      "," << r.second << ")";
     //  seg_t a(point(l.first, l.second), point(r.first, r.second)),
@@ -176,7 +176,7 @@ vector<pair<ii, ii>> Segtree::query(int qx, int y1, int y2, int pos, int lx,
     if (d == 0 || b.on_segment(l) || b.on_segment(r) ||
         a.on_segment(ii(qx, min(y1, y2))) ||
         a.on_segment(ii(qx, max(y1, y2)))) {  // intersect
-      retval.emplace_back(l, r);
+      retval.emplace_back(id);
       //       cout << " <--\n";
     } else {
       break;
@@ -208,10 +208,10 @@ vector<pair<ii, ii>> Segtree::query(int qx, int y1, int y2, int pos, int lx,
   }
 
   if (flag) {
-    vector<pair<ii, ii>> left = query(qx, y1, y2, 2 * pos + 1, lx, mid);
+    vector<int> left = query(qx, y1, y2, 2 * pos + 1, lx, mid);
     retval.insert(retval.end(), all(left));
   } else {
-    vector<pair<ii, ii>> right = query(qx, y1, y2, 2 * pos + 2, mid, rx);
+    vector<int> right = query(qx, y1, y2, 2 * pos + 2, mid, rx);
     retval.insert(retval.end(), all(right));
   }
   return retval;

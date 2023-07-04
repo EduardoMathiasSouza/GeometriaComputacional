@@ -13,14 +13,14 @@ const ll oo = 1987654321987654321;
 
 typedef tuple<int, int, int> iii;
 typedef pair<int, int> ii;
-struct node{
+struct node1d{
     int e = -1, d = -1;
     iii val;
     bool ehfolha = false;
 };
 
 struct RangeTree1d{
-    vector<node> tree;
+    vector<node1d> tree;
 
     RangeTree1d() = default;
     RangeTree1d(vector<iii> pontos);

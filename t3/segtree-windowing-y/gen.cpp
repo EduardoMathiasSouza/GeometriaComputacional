@@ -81,16 +81,16 @@ int32_t main(int32_t argc, char *argv[]) {
 
   cout << q << "\n";
   while (q--){
-    int qx, y1, y2;
-    qx = gen(1 - 5, MAXX + 5);
-    y1 = gen(1, MAXY -5);
-    y2 = gen(1, MAXY + 5);
-    while (y1 == y2){
-        y2 = gen(1, MAXY);
+    int qy, x1, x2;
+    qy = gen(1, MAXY);
+    x1 = gen(1, MAXX);
+    x2 = gen(1, MAXX);
+    while (x1 == x2){
+       x2 = gen(1, MAXY);
     }
-    if (y2 > y1) swap(y1, y2);
+    if (x2 > x1) swap(x1, x2);
     
-    cout << qx << " " << y1 << " " << y2 << "\n";
+    cout << qy << " " << x1 << " " << x2 << "\n";
   }
   
 }

@@ -35,7 +35,7 @@ inline int dot(vet u, vet v) { return u.x * v.x + u.y * v.y; }
 
 // counter clockwise test
 inline bool ccw(point p, point q, point r) {
-    return cross(vet(p, q), vet(p, r)) > 0; 
+  return cross(vet(p, q), vet(p, r)) > 0;
 }
 
 struct seg_t {
@@ -43,30 +43,26 @@ struct seg_t {
   seg_t(point _a, point _b) : a(_a), b(_b) {}
   seg_t() {}
 
-
-   bool on_segment(point p) {
-      return cross(vet(p, this->a), vet(p, this->b)) == 0 &&
-             dot(vet(p, this->a), vet(p, this->b)) <= 0;
-    }
-
+  bool on_segment(point p) {
+    return cross(vet(p, this->a), vet(p, this->b)) == 0 &&
+           dot(vet(p, this->a), vet(p, this->b)) <= 0;
+  }
 };
-
-
 
 // clockwise test
 inline bool cw(point p, point q, point r) {
-    return cross(vet(p, q), vet(p, r)) < 0; 
+  return cross(vet(p, q), vet(p, r)) < 0;
 }
 
 // retorna verdadeiro se dois segmentos de reta se intersectam interiormente
 inline bool intersect(seg_t x, seg_t y) {
-   // cout << "segmento: " << x.a.x << " " << x.a.y << ", " << x.b.x << " " << x.b.y << "\n";
-   // cout << "   outro: " << y.a.x << " " << y.a.y << ", " << y.b.x << " " << y.b.y << "\n";
-  // TODO: deixei menor ou igual a zero  
+  // cout << "segmento: " << x.a.x << " " << x.a.y << ", " << x.b.x << " " <<
+  // x.b.y << "\n"; cout << "   outro: " << y.a.x << " " << y.a.y << ", " <<
+  // y.b.x << " " << y.b.y << "\n";
+  // TODO: deixei menor ou igual a zero
   vet u(x.a, x.b), v(x.b, y.a), w(x.b, y.b);
   vet _u(y.a, y.b), _v(y.b, x.a), _w(y.b, x.b);
-  return (cross(u, v) * cross(u, w) < 0) &&
-         (cross(_u, _v) * cross(_u, _w) < 0);
+  return (cross(u, v) * cross(u, w) < 0) && (cross(_u, _v) * cross(_u, _w) < 0);
 }
 
 // distancia ponto ponto

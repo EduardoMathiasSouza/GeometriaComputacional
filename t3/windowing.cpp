@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 
-#include "range-tree-2d-id/2d.hpp"
-#include "segtree-windowing-id/segtree.hpp"
+#include "range-tree-2d/2d.hpp"
+#include "segtree/segtree.hpp"
 
 #define all(x) x.begin(), x.end()
 using namespace std;
@@ -60,8 +60,8 @@ int32_t main() {
     vector<int> rightedge = segtree_vertical.query(x2, y1, y2);
     vector<int> bottomedge = segtree_horizontal.query(y1, x1, x2);
     vector<int> topedge = segtree_horizontal.query(y2, x1, x2);
-    for (auto &x : {leftedge, rightedge, bottomedge, topedge}){
-        answer.insert(answer.begin(), all(x));
+    for (auto &x : {leftedge, rightedge, bottomedge, topedge}) {
+      answer.insert(answer.begin(), all(x));
     }
 
     // Imprimir resposta(sem repeticao)

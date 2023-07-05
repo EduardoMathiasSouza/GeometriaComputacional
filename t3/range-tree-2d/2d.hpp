@@ -7,11 +7,11 @@ using namespace std;
 
 typedef tuple<int, int, int> iii;
 
-struct item2d {  // TODO: mudar nome
+struct item2d {
   RangeTree1d assoc;
   int xmid = oo;
   bool ehfolha = false;
-  int tam = 0;  // TODO: remover
+  int tam = 0;
 };
 
 struct RangeTree2d {
@@ -26,7 +26,4 @@ struct RangeTree2d {
   int findSplit(int l, int r);
 
   vector<int> query(int x1, int x2, int y1, int y2);
-
-  // Funcao de debug
-  void dump(int pos, int h = 0);
 };
